@@ -1,7 +1,11 @@
 import numpy as np
 import scipy.linalg
 from typing import Callable
+import matplotlib.pyplot as plt
 
+
+# TODO: fixed_point_iteration for set of equations.
+# TODO: newton_iteration for set of equations.
 
 def derivative(func: Callable[[np.longdouble], np.longdouble], x: np.longdouble) -> np.longdouble:
     h: np.longdouble = 1e-12
@@ -85,6 +89,42 @@ def normal_equations(A: np.matrix, b: np.array) -> None:
 #     y = start
 #     for n in range(N+1):
 
+def newton_interpolation(x: np.array, y: np.array, X: np.float):
+    print("Newton interpolation")
+    divided_differences = np.zeros((x.shape[0], x.shape[0]))
+    divided_differences[0] = y
+    for i in range(1,x.shape[0]):
+        for j in range(x.shape[0]-i):
+            divided_differences[i][j] = (divided_differences[i-1][j]-divided_differences[i-1][j+1])/(x[j]-x[j+i])
+    print(divided_differences.T)
+
+    ans = 0
+    for i in range(0,x.shape[0]):
+        fac = 1
+        for j in range(i):
+            fac *= (X - x[j])
+        ans += fac*divided_differences[i][0]
+    print(f'p{x.shape[0]-1}({X})={ans}')
+    return ans
+
+
+
+
+def lagrange_interpolation():
+    ...
+
+
+def chebishev_nodes():
+    ...
+
+
+def newton_cotes():
+    ...
+
+
+def euler_maclaurin():
+    ...
+
 
 if __name__ == '__main__':
     print(derivative(lambda x: x + 2, np.longdouble(3)))
@@ -114,3 +154,13 @@ if __name__ == '__main__':
     A = np.mat([[3, 1], [1, 1], [4, 2]])
     b = np.array([1, 0, 2])
     normal_equations(A, b)
+
+    x = np.array([-1, 0, 1, 2])
+    y = np.array([3, -4, 5, 6])
+    newton_interpolation(x, y, 1.04)
+    x_pred = np.linspace(-2, 3, 50)
+    y_pred = [newton_interpolation(x, y, X) for X in x_pred]
+    print(x_pred, y_pred)
+
+    plt.plot(x_pred, y_pred)
+    plt.show()
